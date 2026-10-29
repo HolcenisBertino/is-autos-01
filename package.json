@@ -1,0 +1,1 @@
+{"name":"is-autos","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"node --watch server.js","start":"node server.js"},"engines":{"node":">=22"},"dependencies":{"dotenv":"^16.6.1","express":"^5.1.0","express-session":"^1.18.2","multer":"^2.0.2"}}
