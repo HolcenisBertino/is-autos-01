@@ -20,9 +20,10 @@ async function loadCars(){
   try {
     const response=await fetch('/api/cars');
     if(!response.ok) throw new Error('API indisponível');
-    cars=await response.json();
+    cars=(await response.json()).map(car=>({...car,id:String(car.id)}));
   } catch(error) {
     console.warn('A usar catálogo local:',error.message);
+    cars=cars.map(car=>({...car,id:String(car.id)}));
   }
   renderCars(cars);
 }
@@ -37,6 +38,7 @@ function addVideosToModal(car){
 function renderPaymentDetails(car){const old=document.querySelector('#modalPaymentDetails');old?.remove();const details=document.createElement('div');details.id='modalPaymentDetails';details.className='modal-payment-details';const money=value=>value?euro(Number(value)):'Não indicado';if(car.paymentType==='direct'||car.paymentType==='both'){details.innerHTML+=`<strong>Parcelado</strong><span>Entrada: ${money(car.directEntry)}</span><span>${car.directInstallments||'Não indicado'} prestações de ${money(car.directInstallmentValue)}</span><span>Periodicidade: ${car.directPeriod||'Não indicada'}</span>`}if(car.paymentType==='bank'||car.paymentType==='both'){details.innerHTML+=`<strong>Financiado</strong><span>Entrada: ${money(car.bankEntry)}</span><span>Prazo: ${car.bankTerm||'Não indicado'}</span><span>Prestação estimada: ${money(car.bankPayment)}</span>${car.bankRate?`<span>TAEG / taxa: ${car.bankRate}</span>`:''}<small>Simulação indicativa sujeita a análise e aprovação da entidade financiadora.</small>`}if(details.innerHTML)document.querySelector('.modal-payment').after(details)}
 grid.addEventListener('click',event=>{const card=event.target.closest('.car-card');if(card){const car=cars.find(item=>String(item.id)===card.dataset.id);setTimeout(()=>{addVideosToModal(car);renderPaymentDetails(car)},0)}});
 document.addEventListener('click',event=>{if(event.target.closest('.car-card')&&document.querySelector('#modalVideo')){const image=document.createElement('img');image.id='modalImage';image.alt='';document.querySelector('.modal-image').prepend(image);document.querySelector('#modalVideo').remove()}},true);
+document.addEventListener('click',event=>{const card=event.target.closest('.car-card');if(card){event.preventDefault();openModal(String(card.dataset.id))}},true);
 const paymentCopy=document.querySelector('.payment-copy');
 const campaignMessage=document.createElement('p');
 campaignMessage.className='campaign-message';
@@ -51,7 +53,7 @@ const paymentTitles=document.querySelectorAll('.payment-cards h3');
 if(paymentTitles[0]) paymentTitles[0].textContent='Parcelado';
 if(paymentTitles[1]) paymentTitles[1].textContent='Financiado';
 const heroImage=document.querySelector('.hero-image-wrap');
-if(heroImage) heroImage.innerHTML='<video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1400&q=85"><source src="/hero-video.mp4" type="video/mp4">O seu navegador não suporta vídeo.</video><div class="image-gradient"></div>';
+if(heroImage) heroImage.innerHTML='<video class="hero-video" autoplay muted loop playsinline preload="auto"><source src="/hero-video.mp4" type="video/mp4">O seu navegador não suporta vídeo.</video><div class="image-gradient"></div>';
 const aboutImage=document.querySelector('.about-image img');
 if(aboutImage){const aboutVideo=document.createElement('video');aboutVideo.className='about-video';aboutVideo.autoplay=true;aboutVideo.muted=true;aboutVideo.loop=true;aboutVideo.playsInline=true;aboutVideo.preload='metadata';aboutVideo.innerHTML='<source src="/hero-video_02.mp4" type="video/mp4">O seu navegador não suporta vídeo.';aboutImage.replaceWith(aboutVideo)}
 document.querySelectorAll('.brand').forEach(brand=>{brand.innerHTML='<img class="brand-logo-image" src="/logo_01.jpg" alt="IS Autos">'});
@@ -62,6 +64,7 @@ document.querySelector('.header-actions .button-dark').insertAdjacentHTML('after
 document.querySelector('.footer-contact a:last-child').insertAdjacentHTML('afterbegin',instagramIcon);
 const locationBadge=document.createElement('div');locationBadge.className='location-badge';locationBadge.innerHTML='<svg class="location-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"></path><circle cx="12" cy="9" r="2.2"></circle></svg> Braga, Portugal';document.querySelector('.hero-copy').prepend(locationBadge);
 const footerLocation=document.createElement('span');footerLocation.className='footer-location';footerLocation.innerHTML='<svg class="location-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"></path><circle cx="12" cy="9" r="2.2"></circle></svg> Braga, Portugal';document.querySelector('.footer-contact').prepend(footerLocation);
+function setHeroLayout(){document.body.classList.toggle('mobile-hero-layout',window.innerWidth<=768)}setHeroLayout();window.addEventListener('resize',setHeroLayout);
 const allCarsButton=document.createElement('button');allCarsButton.className='button button-dark all-cars-button';allCarsButton.type='button';allCarsButton.innerHTML='Ver todas as viaturas <span>↗</span>';document.querySelector('.stock-section .car-grid').after(allCarsButton);allCarsButton.addEventListener('click',()=>{document.querySelector('#clearFilters').click();document.querySelector('#stock').scrollIntoView({behavior:'smooth',block:'start'})});
 document.querySelector('.hero-copy h1').innerHTML='O seu carro<br><em>em Portugal.</em>';
 document.querySelector('.hero-text').textContent='Chegou a hora de ter o seu carro em Portugal: soluções simples, transparentes e sem burocracia.';

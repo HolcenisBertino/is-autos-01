@@ -140,4 +140,4 @@ app.patch('/api/admin/cars/:id', requireAdmin, async (request, response) => {
   } catch (error) { response.status(500).json({ error: 'Não foi possível atualizar a viatura.' }); }
 });
 
-app.listen(port, () => console.log(`IS Autos disponível em http://localhost:${port}`));
+app.listen(port, '0.0.0.0', () => console.log(`IS Autos disponível em http://localhost:${port}`));
