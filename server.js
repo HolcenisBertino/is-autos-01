@@ -19,7 +19,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 1000 * 60 * 60 * 8 }
 }));
-app.use(express.static(__dirname, { index: 'index.html' }));
+app.use(express.static(path.join(__dirname, 'public'), { index: 'index.html' }));
 app.use('/uploads', express.static(uploadPath));
 
 const imageStorage = multer.diskStorage({
